@@ -1,9 +1,18 @@
+# 2 EVM based blockchain network setup
+
+## Prerequisite
+
+- [Go v1.21+](https://go.dev/dl/)
+- [Geth v1.13.x](https://github.com/ethereum/go-ethereum/tree/v1.13.14)
 
 # Setup 2 Blockchain Networks
 
 ## Setup Environment
+
 ### Setup Environment variables
+
 Copy .env.example file to .env and setup environment variables.
+
 ```
 export GETH_DIR=$HOME/.geth
 export KEYSTORE=$GETH_DIR/keystore
@@ -23,38 +32,44 @@ export AUTHRPC_PORT_B=8651
 ```
 
 ### Setup Directory
+
 ```
 mkdir $GETH_DIR
 mkdir $KEYSTORE
 mkdir $CLEF_CONFIG_DIR
 ```
 
-
 ## Setup Clef
+
 ### Init
+
 ```
-clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR init 
+clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR init
 ```
 
 ### Create Accounts
+
 ```
 clef newaccount --keystore $KEYSTORE
 clef newaccount --keystore $KEYSTORE
 ```
 
 ### Set Etherbase of Chain A and B
+
 ```
 export ETHERBASE_A=
 export ETHERBASE_B=
 ```
 
 ### Store passwords in clef
+
 ```
 clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_A setpw $ETHERBASE_A
 clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_B setpw $ETHERBASE_B
 ```
 
 ### Write Clef Approval Rules
+
 ```
 function OnSignerStartup(info) {}
 
@@ -82,7 +97,7 @@ function ApproveTx(r) {
 function OnApprovedTx(resp) {
     var value = big(resp.tx.value);
     var txs = [];
-    
+
     // Load stored transactions
     var stored = storage.get('txs');
     if (stored != '') {
@@ -96,6 +111,7 @@ function OnApprovedTx(resp) {
 ```
 
 ### Attest Rules
+
 ```
 // Rules for Chain A
 clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_A --suppress-bootwarn  attest  `shasum -a 256 $CLEF_CONFIG_DIR/rules.js | cut -f1`
@@ -105,23 +121,23 @@ clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_B --s
 ```
 
 ### Run Clef with Rules
+
 ```
 // Terminal A
-clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_A --rules $CLEF_CONFIG_DIR/rules.js
-
-// Terminal B
-clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_B --rules $CLEF_CONFIG_DIR/rules.js
+clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --rules $CLEF_CONFIG_DIR/rules.js
 ```
-
 
 ## Setup Chain A
 
 ### Initialize Geth
+
 ```
 geth init --datadir $CHAIN_DIR_A $CHAIN_DIR_A/genesis.json
 geth init --datadir $CHAIN_DIR_B $CHAIN_DIR_B/genesis.json
 ```
+
 ### Start Chain
+
 ```
 // Chain A
 geth --datadir $CHAIN_DIR_A \
@@ -143,10 +159,11 @@ geth --datadir $CHAIN_DIR_B \
 --authrpc.jwtsecret $CHAIN_DIR_B/jwtsecret \
 --http --http.port $HTTP_PORT_B --http.api eth,net \
 --signer=$CLEF_CONFIG_DIR/clef.ipc \
---mine --miner.etherbase=$ETHERBASE_B 
+--mine --miner.etherbase=$ETHERBASE_B
 ```
 
 ### Attach Chain A IPC
+
 ```
 // Chain A
 geth attach $CHAIN_DIR_A/geth.ipc
@@ -156,13 +173,8 @@ geth attach $CHAIN_DIR_B/geth.ipc
 ```
 
 ### Send Ether to contract deployer
+
 ```
 eth.sendTransaction({ from: eth.accounts[0], to: "0x3605Ca39aC83b8F559B64C453feC6A22AEF99259", value: 1000000000000000000, gas: 21000 });
 eth.sendTransaction({ from: eth.accounts[1], to: "0x3605Ca39aC83b8F559B64C453feC6A22AEF99259", value: 1000000000000000000, gas: 21000 });
 ```
-
-
-
-
-
-
