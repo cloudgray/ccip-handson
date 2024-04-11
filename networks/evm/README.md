@@ -147,6 +147,7 @@ geth --datadir $CHAIN_DIR_A \
 --authrpc.vhosts localhost \
 --authrpc.jwtsecret $CHAIN_DIR_A/jwtsecret \
 --http --http.port 8545 --http.api eth,net \
+--ws --ws.port 8546 \
 --signer=$CLEF_CONFIG_DIR/clef.ipc \
 --mine --miner.etherbase=$ETHERBASE_A
 
