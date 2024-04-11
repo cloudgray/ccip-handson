@@ -117,6 +117,7 @@ func deployArmWithProxy(transactor *bind.TransactOpts, chainClient *ethclient.Cl
 	)
 	helpers.PrintAndPanicErr("error deploying mock arm contract: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
+	fmt.Printf("ARM Contract Deployed!\n\n")
 	
 	_, tx, armProxy, err := arm_proxy_contract.DeployARMProxyContract(
 		transactor,
@@ -125,6 +126,7 @@ func deployArmWithProxy(transactor *bind.TransactOpts, chainClient *ethclient.Cl
 	)
 	helpers.PrintAndPanicErr("error deploying arm proxy contract: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
+	fmt.Printf("ARMProxy Contract Deployed!\n\n")
 
 	return arm, armProxy
 }
@@ -135,6 +137,7 @@ func deployLinkToken(transactor *bind.TransactOpts, chainClient *ethclient.Clien
 	_, tx, linkToken, err := link_token_interface.DeployLinkToken(transactor, chainClient)
 	helpers.PrintAndPanicErr("error deploying link token: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
+	fmt.Printf("LinkToken Contract Deployed!\n\n")
 
 	return linkToken
 }
@@ -142,12 +145,10 @@ func deployLinkToken(transactor *bind.TransactOpts, chainClient *ethclient.Clien
 func deployWeth9(transactor *bind.TransactOpts, chainClient *ethclient.Client) (*weth9.WETH9) {
 	chainID := getChainID(chainClient)
 
-	weth9Address, tx, _, err := weth9.DeployWETH9(transactor, chainClient)
+	_, tx, weth9, err := weth9.DeployWETH9(transactor, chainClient)
 	helpers.PrintAndPanicErr("error deploying weth9: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
-
-	weth9, err := weth9.NewWETH9(weth9Address, chainClient)
-	helpers.PrintAndPanicErr("error creating weth9: %v", err)
+	fmt.Printf("WrappedNative Contract Deployed!\n\n")
 
 	return weth9
 }
@@ -158,6 +159,7 @@ func deployRouter(transactor *bind.TransactOpts, chainClient *ethclient.Client, 
 	_, tx, router, err := router.DeployRouter(transactor, chainClient, weth9, armProxy)
 	helpers.PrintAndPanicErr("error deploying router: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
+	fmt.Printf("Router Contract Deployed!\n\n")
 
 	return router
 }
@@ -179,6 +181,7 @@ func deployLockReleaseTokenPool_1_0_0(
 	)
 	helpers.PrintAndPanicErr("error deploying lock release token pool: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
+	fmt.Printf("TokenPool_1_0_0 Contract Deployed!\n\n")
 
 	return tokenPool
 }
@@ -203,16 +206,16 @@ func deployLockReleaseTokenPool(
 	)
 	helpers.PrintAndPanicErr("error deploying lock release token pool: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
+	fmt.Printf("TokenPool Contract Deployed!\n\n")
 
 	return tokenPool
 }
 
 func deployLinkTokenInterfaceImpl(transactor *bind.TransactOpts, chainClient *ethclient.Client) (*link_token_interface.LinkToken) {
-	linkTokenAddress, _, _, err := link_token_interface.DeployLinkToken(transactor, chainClient)
+	_, tx, linkToken, err := link_token_interface.DeployLinkToken(transactor, chainClient)
 	helpers.PrintAndPanicErr("error deploying link token: %v", err)
-
-	linkToken, err := link_token_interface.NewLinkToken(linkTokenAddress, chainClient)
-	helpers.PrintAndPanicErr("error creating link token: %v", err)
+	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, getChainID(chainClient))
+	fmt.Printf("TokenPool Contract Deployed!\n\n")
 
 	return linkToken
 }
@@ -234,6 +237,7 @@ func deployPriceRegistry(
 	)
 	helpers.PrintAndPanicErr("error deploying price registry: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
+	fmt.Printf("PriceRegistry Contract Deployed!\n\n")
 
 	return priceRegistry
 }
@@ -314,6 +318,7 @@ func deployEVM2EVMOnRamp(
 	)
 	helpers.PrintAndPanicErr("error deploying onramp: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), src.Chain, tx, chainID)
+	fmt.Printf("CommitStore Contract Deployed!\n\n")
 
 	return onRamp
 }
@@ -343,6 +348,7 @@ func deployCommitStore(
 
 	commitStore, err := commit_store.NewCommitStore(commitStoreAddress, chainClient)
 	helpers.PrintAndPanicErr("error creating commit store: %v", err)
+	fmt.Printf("CommitStore Contract Deployed!\n\n")
 
 	return commitStore, commitStoreHelper
 }
@@ -375,6 +381,7 @@ func deployEVM2EVMOffRamp(
 	)
 	helpers.PrintAndPanicErr("error deploying offramp: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), dest.Chain, tx, chainID)
+	fmt.Printf("OffRamp Contract Deployed!\n\n")
 
 	return offRamp
 }
@@ -386,6 +393,7 @@ func deployRevertingMessageReceiver(
 	_, tx, revertingMessageReceiver, err := maybe_revert_message_receiver.DeployMaybeRevertMessageReceiver(transactor, chainClient, false)
 	helpers.PrintAndPanicErr("error deploying reverting message receiver: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, getChainID(chainClient))
+	fmt.Printf("RevertingMessageReceiver Contract Deployed!\n\n")
 
 	return revertingMessageReceiver
 }

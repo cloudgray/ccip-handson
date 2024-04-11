@@ -24,7 +24,6 @@ import (
 )
 var (
 	Link        	= func(amount int64) *big.Int { return new(big.Int).Mul(big.NewInt(1e18), big.NewInt(amount)) }
-	HundredLink 	= Link(100)
 	LinkUSDValue 	= func(amount int64) *big.Int { return new(big.Int).Mul(big.NewInt(1e18), big.NewInt(amount)) }
 )
 
