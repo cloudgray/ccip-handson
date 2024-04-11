@@ -148,7 +148,7 @@ func deployWeth9(transactor *bind.TransactOpts, chainClient *ethclient.Client) (
 	_, tx, weth9, err := weth9.DeployWETH9(transactor, chainClient)
 	helpers.PrintAndPanicErr("error deploying weth9: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
-	fmt.Printf("WrappedNative Contract Deployed!\n\n")
+	fmt.Printf("WrappedNative Token Contract Deployed!\n\n")
 
 	return weth9
 }
@@ -181,7 +181,7 @@ func deployLockReleaseTokenPool_1_0_0(
 	)
 	helpers.PrintAndPanicErr("error deploying lock release token pool: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
-	fmt.Printf("TokenPool_1_0_0 Contract Deployed!\n\n")
+	fmt.Printf("LockReleaseTokenPool_1_0_0 Contract Deployed!\n\n")
 
 	return tokenPool
 }
@@ -206,7 +206,7 @@ func deployLockReleaseTokenPool(
 	)
 	helpers.PrintAndPanicErr("error deploying lock release token pool: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, chainID)
-	fmt.Printf("TokenPool Contract Deployed!\n\n")
+	fmt.Printf("LockReleaseTokenPool Contract Deployed!\n\n")
 
 	return tokenPool
 }
@@ -215,7 +215,7 @@ func deployLinkTokenInterfaceImpl(transactor *bind.TransactOpts, chainClient *et
 	_, tx, linkToken, err := link_token_interface.DeployLinkToken(transactor, chainClient)
 	helpers.PrintAndPanicErr("error deploying link token: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), chainClient, tx, getChainID(chainClient))
-	fmt.Printf("TokenPool Contract Deployed!\n\n")
+	fmt.Printf("LinkToken Contract Deployed!\n\n")
 
 	return linkToken
 }
@@ -318,7 +318,7 @@ func deployEVM2EVMOnRamp(
 	)
 	helpers.PrintAndPanicErr("error deploying onramp: %v", err)
 	helpers.ConfirmContractDeployed(context.Background(), src.Chain, tx, chainID)
-	fmt.Printf("CommitStore Contract Deployed!\n\n")
+	fmt.Printf("OnRamp Contract Deployed!\n\n")
 
 	return onRamp
 }
