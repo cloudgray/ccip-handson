@@ -44,9 +44,11 @@ func New(websocket bool, overrideNonce bool) Env {
 		WSURLs:      make(map[uint64]string),
 	}
 	for _, chainID := range []uint64{
-		chainsel.ETHEREUM_TESTNET_SEPOLIA.EvmChainID,
-		chainsel.ETHEREUM_TESTNET_SEPOLIA_ARBITRUM_1.EvmChainID,
-		chainsel.ETHEREUM_TESTNET_SEPOLIA_OPTIMISM_1.EvmChainID,
+		// chainsel.ETHEREUM_TESTNET_SEPOLIA.EvmChainID,
+		// chainsel.ETHEREUM_TESTNET_SEPOLIA_ARBITRUM_1.EvmChainID,
+		// chainsel.ETHEREUM_TESTNET_SEPOLIA_OPTIMISM_1.EvmChainID,
+		chainsel.TEST_90000001.EvmChainID,
+		chainsel.TEST_90000002.EvmChainID,
 	} {
 		client, rpcClient, err := GetClient(chainID, websocket)
 		if err != nil {

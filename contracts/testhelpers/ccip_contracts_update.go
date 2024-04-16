@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	helpers "touchstone.com/ccip/handson/common"
+	"touchstone.com/ccip/handson/contracts/generated/commit_store"
 	"touchstone.com/ccip/handson/contracts/generated/link_token_interface"
 	"touchstone.com/ccip/handson/contracts/generated/lock_release_token_pool"
 	"touchstone.com/ccip/handson/contracts/generated/lock_release_token_pool_1_0_0"
@@ -48,18 +50,18 @@ func provideLiquidityToLinkPool(
 	chainID := getChainID(chainClient)
 
 	_, err := linkPool.Owner(nil)
-	helpers.PrintAndPanicErr("error getting owner of dest pool: %v", err)
+	helpers.PrintAndPanicErr("error getting owner of dest pool: ", err)
 
 	tx, err := linkPool.SetRebalancer(transactor, transactor.From)
-	helpers.PrintAndPanicErr("error setting rebalancer: %v", err)
+	helpers.PrintAndPanicErr("error setting rebalancer: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	
 	tx, err = linkToken.Approve(transactor, linkPool.Address(), Link(200))
-	helpers.PrintAndPanicErr("error approving link token: %v", err)
+	helpers.PrintAndPanicErr("error approving link token: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 
 	tx, err = linkPool.ProvideLiquidity(transactor, Link(200))
-	helpers.PrintAndPanicErr("error providing liquidity: %v", err)
+	helpers.PrintAndPanicErr("error providing liquidity: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	fmt.Printf("Provided liquidity to link pool!\n\n")
 }
@@ -75,13 +77,13 @@ func provideLiquidityToWeth9Pool(
 	poolFloatValue := big.NewInt(1e12)
 	transactor.Value = poolFloatValue
 	tx, err := weth9.Deposit(transactor)
-	helpers.PrintAndPanicErr("error depositing weth: %v", err)
+	helpers.PrintAndPanicErr("error depositing weth: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	fmt.Printf("Deposited wrapped native token!\n\n")
 
 	transactor.Value = nil
 	tx, err = weth9.Transfer(transactor, weth9Pool.Address(), poolFloatValue)
-	helpers.PrintAndPanicErr("error transferring weth: %v", err)
+	helpers.PrintAndPanicErr("error transferring weth: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	fmt.Printf("Provided liquidity to wrapped native pool!\n\n")
 }
@@ -108,7 +110,7 @@ func applyLockReleaseTokenPool_1_0_0RampUpdates(
 		},
 		[]lock_release_token_pool_1_0_0.TokenPoolRampUpdate{},
 	)
-	helpers.PrintAndPanicErr("error applying token pool chain update: %v", err)
+	helpers.PrintAndPanicErr("error applying token pool chain update: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	fmt.Printf("Token pool chain updates applied!\n\n")
 }
@@ -139,7 +141,7 @@ func applyLockReleaseTokenPoolChainUpdates(
 		}},
 	)
 
-	helpers.PrintAndPanicErr("error applying token pool chain update: %v", err)
+	helpers.PrintAndPanicErr("error applying token pool chain update: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	fmt.Printf("Token pool chain updates applied!\n\n")
 }
@@ -171,7 +173,7 @@ func applyPriceRegistryPriceUpdate(
 			},
 		},
 	})
-	helpers.PrintAndPanicErr("error updating prices: %v", err)
+	helpers.PrintAndPanicErr("error updating prices: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	fmt.Printf("Price registry update applied!\n\n")
 }
@@ -186,7 +188,7 @@ func applyPriceRegistryUpdatersUpdate(
 	chainID := getChainID(chainClient)
 
 	tx, err := destPriceRegistry.ApplyPriceUpdatersUpdates(transactor, priceUpdatersToRemove, priceUpdatersToRemove)
-	helpers.PrintAndPanicErr("error applying price updaters update: %v", err)
+	helpers.PrintAndPanicErr("error applying price updaters update: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	fmt.Printf("Price updaters updated!\n\n")
 }
@@ -201,7 +203,50 @@ func applyRouterRampUpdates(
 ) {
 	chainID := getChainID(chainClient)
 	tx, err := router.ApplyRampUpdates(transactor, onRamps, offRampsToRemove, offRampsToAdd)
-	helpers.PrintAndPanicErr("error applying router ramp updates: %v", err)
+	helpers.PrintAndPanicErr("error applying router ramp updates: ", err)
 	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
 	fmt.Printf("Router ramp updates applied!\n\n")
+}
+
+
+func applyCommitStoreSetOCR2Config(
+	transactor *bind.TransactOpts,
+	chainClient *ethclient.Client,
+	commitStore *commit_store.CommitStore,
+	signers []common.Address,
+	transmitters []common.Address,
+	tolerableNumOfFaultyOracles uint8,
+	onchainConfig []byte,
+	offchainConfigVersion uint64,
+	offchainConfig []byte,
+) {
+	chainID := getChainID(chainClient)
+
+	dynamicConfigBytes, err := getDynamicConfigArguments().Pack(common.HexToAddress("0x9402Ae0c5a48859F22FA510fC6ac990261043E1f"))
+
+	tx, err := commitStore.SetOCR2Config(
+		transactor,
+		signers,
+		transmitters,
+		tolerableNumOfFaultyOracles,
+		dynamicConfigBytes,
+		offchainConfigVersion,
+		offchainConfig,
+	)
+	helpers.PrintAndPanicErr("error setting CommitStore OCR2 config: ", err)
+	helpers.ConfirmTXMined(context.Background(), chainClient, tx, chainID)
+	fmt.Printf("Commit Store OCR2 config set!\n\n")
+}
+
+func getDynamicConfigArguments() abi.Arguments {
+	mustNewType := func(t string) abi.Type {
+		result, err := abi.NewType(t, "", []abi.ArgumentMarshaling{})
+		if err != nil {
+			panic(fmt.Sprintf("Unexpected error during abi.NewType: %s", err))
+		}
+		return result
+	}
+	return abi.Arguments([]abi.Argument{
+		{Name: "priceRegistry", Type: mustNewType("address")},
+	})
 }

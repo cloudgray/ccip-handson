@@ -3,6 +3,9 @@ package testhelpers
 import (
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/common"
+	helpers "touchstone.com/ccip/handson/common"
+	"touchstone.com/ccip/handson/contracts/generated/commit_store"
 	"touchstone.com/ccip/handson/multienv"
 )
 
@@ -31,4 +34,14 @@ func SetupCCIPLane(env multienv.Env, srcChainID, destChainID uint64) CCIPContrac
 		Source: *srcChain,
 		Dest:   *destChain,
 	}
+}
+
+func SetCommitStoreConfig(env multienv.Env, chainID uint64, commitStoreAddress common.Address, signers, transmitters []common.Address) {
+	transactor := env.Transactors[chainID]
+	chainClient := env.Clients[chainID]
+
+	commitStore, err := commit_store.NewCommitStore(commitStoreAddress, chainClient)
+	helpers.PrintAndPanicErr("error creating commit store helper: %v", err)
+
+	applyCommitStoreSetOCR2Config(transactor, chainClient, commitStore, signers, transmitters, 1, []byte{}, 1, []byte{})
 }
