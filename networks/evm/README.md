@@ -19,16 +19,20 @@ export KEYSTORE=$GETH_DIR/keystore
 export CLEF_CONFIG_DIR=$GETH_DIR/clef
 
 export CHAIN_DIR_A=$GETH_DIR/chain-a
-export CHAIN_ID_A=11155111
+export CHAIN_ID_A=90000001
 export HTTP_PORT_A=8545
+export WS_PORT_A=8546
 export DISCOVERY_PORT_A=30303
 export AUTHRPC_PORT_A=8551
+export ETHERBASE_A="0xd1bf8388759c5adbaa2ca48bd161da7e163167c9"
 
 export CHAIN_DIR_B=$GETH_DIR/chain-b
-export CHAIN_ID_B=421614
+export CHAIN_ID_B=90000002
 export HTTP_PORT_B=8645
+export WS_PORT_B=8646
 export DISCOVERY_PORT_B=31303
 export AUTHRPC_PORT_B=8651
+export ETHERBASE_B="0x1064b11d2a9691576e1e194557ed6a30a836b642"
 ```
 
 ### Setup Directory
@@ -121,10 +125,12 @@ clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_B --s
 ```
 
 ### Run Clef with Rules
-
 ```
 // Terminal A
-clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --rules $CLEF_CONFIG_DIR/rules.js
+clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_A --rules $CLEF_CONFIG_DIR/rules.js
+
+// Terminal A
+clef --keystore $KEYSTORE --configdir $CLEF_CONFIG_DIR --chainid $CHAIN_ID_B --rules $CLEF_CONFIG_DIR/rules.js
 ```
 
 ## Setup Chain A
@@ -146,10 +152,12 @@ geth --datadir $CHAIN_DIR_A \
 --authrpc.port $AUTHRPC_PORT_A \
 --authrpc.vhosts localhost \
 --authrpc.jwtsecret $CHAIN_DIR_A/jwtsecret \
---http --http.port 8545 --http.api eth,net \
---ws --ws.port 8546 \
+--http --http.port $HTTP_PORT_A --http.api eth,net,web3 \
+--ws --ws.port $WS_PORT_A \
 --signer=$CLEF_CONFIG_DIR/clef.ipc \
---mine --miner.etherbase=$ETHERBASE_A
+--mine --miner.etherbase=$ETHERBASE_A \
+--nodiscover --networkid $CHAIN_DIR_B \
+--verbosity 1
 
 // Chain B
 geth --datadir $CHAIN_DIR_B \
@@ -158,9 +166,12 @@ geth --datadir $CHAIN_DIR_B \
 --authrpc.port $AUTHRPC_PORT_B \
 --authrpc.vhosts localhost \
 --authrpc.jwtsecret $CHAIN_DIR_B/jwtsecret \
---http --http.port $HTTP_PORT_B --http.api eth,net \
+--http --http.port $HTTP_PORT_B --http.api eth,net,web3 \
+--ws --ws.port $WS_PORT_B \
 --signer=$CLEF_CONFIG_DIR/clef.ipc \
---mine --miner.etherbase=$ETHERBASE_B
+--mine --miner.etherbase=$ETHERBASE_B \
+--nodiscover --networkid $CHAIN_DIR_B \
+--verbosity 1
 ```
 
 ### Attach Chain A IPC
