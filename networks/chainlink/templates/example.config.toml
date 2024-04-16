@@ -1,21 +1,37 @@
 
 # Ethereum Sepolia
 [[EVM]]
-ChainID = '11155111'
+ChainID = '$CHAIN_ID_A'
 
 [[EVM.Nodes]]
-Name = 'sepolia_1'
-WSURL = 'wss://127.0.0.1:8546'
-HTTPURL = 'http://127.0.0.1:8545'
+Name = 'test_1'
+WSURL = 'ws://127.0.0.1:$WS_PORT_A'
+HTTPURL = 'http://127.0.0.1:$HTTP_PORT_A'
 
 # Arbitrum Sepolia
 [[EVM]]
-ChainID = '421614'
+ChainID = '$CHAIN_ID_B'
 
 [[EVM.Nodes]]
-Name = "arbitrum_sepolia_1"
-WSURL = 'wss://127.0.0.1:8646'
-HTTPURL = 'http://127.0.0.1:8645'
+Name = "test_2"
+WSURL = 'ws://127.0.0.1:$WS_PORT_B'
+HTTPURL = 'http://127.0.0.1:$HTTP_PORT_B'
+
+# [EVM.GasEstimator]
+# PriceDefault = '20 gwei'
+# PriceMax = '115792089237316195423570985008687907853269984665.640564039457584007913129639935 tether'
+# PriceMin = '1 gwei'
+# LimitDefault = 500000
+# LimitMax = 500000
+# LimitMultiplier = '1'
+# LimitTransfer = 21000
+# BumpMin = '5 gwei'
+# BumpPercent = 20
+# BumpThreshold = 3
+# EIP1559DynamicFees = false
+# FeeCapDefault = '100 gwei'
+# TipCapDefault = '1 wei'
+# TipCapMin = '1 wei'
 
 [EVM.Transactions]
 ForwardersEnabled = false
@@ -29,7 +45,7 @@ ContractPollInterval = "15s"
 
 [OCR]
 Enabled = false
-TransmitterAddress = '0x3605Ca39aC83b8F559B64C453feC6A22AEF99259'
+TransmitterAddress = '$TRANSMITTER_ADDRESS'
 
 [P2P.V2]
 Enabled = true
